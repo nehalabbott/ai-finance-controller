@@ -54,3 +54,166 @@ Tested on a synthetic 30-day batch of 1,412 bank transactions and 56 gateway set
 git clone [https://github.com/your-username/ai-finance-controller.git](https://github.com/your-username/ai-finance-controller.git)
 cd ai-finance-controller
 pip install -r requirements.txt
+Sure — here’s a clean README-ready Markdown version:
+
+## 2. Set Your API Key
+
+The project requires an API key for the AI diagnostic agent. You can use either **Groq** or **Gemini**.
+
+### Groq
+
+```powershell
+$env:GROQ_API_KEY="your_api_key_here"
+```
+
+### Gemini
+
+```powershell
+$env:GEMINI_API_KEY="your_api_key_here"
+```
+
+> **Note:** Set only the API key for the provider configured in your project.
+
+---
+
+## 3. Run the Full Automated Pipeline
+
+Execute the deterministic reconciliation engine, AI diagnostic agent, audit generator, and evaluation harness in one command:
+
+```powershell
+python main.py
+```
+
+The pipeline performs the following steps:
+
+1. Processes the input bank and gateway data.
+2. Runs the deterministic reconciliation engine.
+3. Uses the AI diagnostic agent for unresolved discrepancies.
+4. Generates the reconciliation audit.
+5. Runs the evaluation harness against the ground-truth data.
+6. Produces the final audit output in `/output`.
+
+The generated audit file is:
+
+```text
+output/reconciliation_audit_sheet.csv
+```
+
+---
+
+## 4. Launch the Interactive Streamlit Dashboard
+
+Launch the visual dashboard to inspect reconciliation results, audit tables, and interact with the Q&A assistant:
+
+```powershell
+python -m streamlit run src/app.py
+```
+
+Once started, Streamlit will provide a local URL, typically:
+
+```text
+http://localhost:8501
+```
+
+Open the URL in your browser to access the dashboard.
+
+---
+
+## 5. Start the Real-Time FastAPI Webhook Daemon
+
+Start the FastAPI webhook gateway locally on port `8000`:
+
+```powershell
+python -m uvicorn src.webhook_receiver:app --reload --port 8000
+```
+
+The API will be available at:
+
+```text
+http://localhost:8000
+```
+
+FastAPI's interactive API documentation can be accessed at:
+
+```text
+http://localhost:8000/docs
+```
+
+The `--reload` flag automatically restarts the server whenever source files are modified.
+
+---
+
+## 6. Run Using Docker Compose
+
+To build and start the containerized services in a single command:
+
+```powershell
+docker-compose up --build
+```
+
+To stop the services:
+
+```powershell
+docker-compose down
+```
+
+Make sure **Docker Desktop** is installed and running before executing the command.
+
+---
+
+## 📁 Repository Structure
+
+```text
+.
+├── contracts/
+│   └── ochicken_contract.json
+│       └── Machine-readable legal fee rules
+│
+├── data/
+│   ├── Synthetic bank ledgers
+│   ├── Gateway reports
+│   └── Ground-truth validation data
+│
+├── src/
+│   ├── Core reconciliation engine
+│   ├── Tier 2 LLM batch agents
+│   ├── FastAPI webhook daemon
+│   ├── Automated alerts
+│   └── Streamlit frontend
+│
+├── tests/
+│   └── eval_harness.py
+│       └── Automated evaluation harness
+│
+├── output/
+│   └── reconciliation_audit_sheet.csv
+│       └── Final audit output for finance operators
+│
+├── main.py
+├── Dockerfile
+└── docker-compose.yml
+```
+
+## 🚀 Quick Start
+
+For a complete local setup, run the following commands in order:
+
+```powershell
+# 1. Set your API key
+$env:GROQ_API_KEY="your_api_key_here"
+
+# 2. Run the complete automated pipeline
+python main.py
+
+# 3. Launch the Streamlit dashboard
+python -m streamlit run src/app.py
+
+# 4. In a separate terminal, start the webhook daemon
+python -m uvicorn src.webhook_receiver:app --reload --port 8000
+```
+
+Alternatively, run the entire containerized application using:
+
+```powershell
+docker-compose up --build
+```
