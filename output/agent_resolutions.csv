@@ -1,35 +1,35 @@
 transaction_id,exception_type,details,root_cause,reasoning,recommended_action
-1001,NET_MISMATCH,"Bank received 23815.85, Gateway reported 24262.04",GATEWAY_OVERCHARGE,Discrepancy between bank received amount (23815.85) and gateway reported amount (24262.04) requires human reconciliation.,ESCALATE
-1052,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1689.0,UPI_WAIVER,Charged fee is 0.0 due to the NPCI zero-MDR mandate on UPI transactions as specified in the contract.,IGNORE
-1087,NET_MISMATCH,"Bank received 19521.23, Gateway reported 19568.4",GATEWAY_OVERCHARGE,Net mismatch between bank received amount (19521.23) and gateway reported amount (19568.4).,ESCALATE
-1179,NET_MISMATCH,"Bank received 17762.05, Gateway reported 18094.82",GATEWAY_OVERCHARGE,Net settlement mismatch between bank statement (17762.05) and gateway report (18094.82).,ESCALATE
-1180,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 832.17,UPI_WAIVER,Charged fee is 0.0 due to NPCI zero-MDR mandate on UPI transactions.,IGNORE
-1231,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 149.22,UPI_WAIVER,Charged fee is 0.0 due to NPCI zero-MDR mandate on UPI transactions.,IGNORE
-1275,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1115.32,UPI_WAIVER,Charged fee is 0.0 due to NPCI zero-MDR mandate on UPI transactions.,IGNORE
-1329,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1538.09,UPI_WAIVER,Charged fee is 0.0 due to NPCI zero-MDR mandate on UPI transactions.,IGNORE
-1381,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1687.67,UPI_WAIVER,Charged fee is 0.0 due to NPCI zero-MDR mandate on UPI transactions.,IGNORE
-1672,FEE_VARIANCE,Charged fee 412.21 differs from expected base fee 494.65,PROMO_RATE,Charged fee reflects the promotional MDR of 1.50% instead of standard base MDR of 1.80%.,IGNORE
-1673,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1128.46,UPI_WAIVER,Charged fee is 0.0 due to NPCI zero-MDR mandate on UPI transactions.,IGNORE
-1724,FEE_VARIANCE,Charged fee 336.09 differs from expected base fee 403.31,PROMO_RATE,Charged fee reflects the promotional MDR of 1.50% instead of standard base MDR of 1.80%.,IGNORE
-1772,MISSING_IN_GATEWAY,Bank net: 25062.05,GHOST_TXN,Transaction appears in bank settlement (25062.05) but is completely missing from gateway reporting.,ESCALATE
-1817,FEE_VARIANCE,Charged fee 287.85 differs from expected base fee 345.41,PROMO_RATE,Charged fee reflects the promotional MDR of 1.50% instead of standard base MDR of 1.80%.,IGNORE
-1855,FEE_VARIANCE,Charged fee 288.68 differs from expected base fee 346.42,PROMO_RATE,Charged fee reflects the promotional MDR of 1.50% instead of standard base MDR of 1.80%.,IGNORE
-1906,FEE_VARIANCE,Charged fee 306.54 differs from expected base fee 367.85,PROMO_RATE,Charged fee reflects the promotional MDR of 1.50% instead of standard base MDR of 1.80%.,IGNORE
-1907,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1543.13,UPI_WAIVER,Charged fee is 0.0 due to NPCI zero-MDR mandate on UPI transactions.,IGNORE
-1908,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 487.97,UPI_WAIVER,Charged fee is 0.0 due to NPCI zero-MDR mandate on UPI transactions.,IGNORE
-1943,NET_MISMATCH,"Bank received 23694.06, Gateway reported 24068.95",GATEWAY_OVERCHARGE,Net mismatch between bank received amount (23694.06) and gateway reported amount (24068.95).,ESCALATE
-1982,FEE_VARIANCE,Charged fee 310.29 differs from expected base fee 372.35,PROMO_RATE,Charged fee reflects the promotional MDR of 1.50% instead of standard base MDR of 1.80%.,IGNORE
-2041,FEE_VARIANCE,Charged fee 374.57 differs from expected base fee 449.49,PROMO_RATE,Charged fee reflects the promotional MDR of 1.50% instead of standard base MDR of 1.80%.,IGNORE
-2042,NET_MISMATCH,"Bank received 64502.79, Gateway reported 66061.85",GATEWAY_OVERCHARGE,Net mismatch between bank received amount (64502.79) and gateway reported amount (66061.85).,ESCALATE
-2097,FEE_VARIANCE,Charged fee 406.72 differs from expected base fee 488.07,PROMO_RATE,Charged fee reflects the promotional MDR of 1.50% instead of standard base MDR of 1.80%.,IGNORE
-2136,NET_MISMATCH,"Bank received 25226.92, Gateway reported 24999.64",GATEWAY_OVERCHARGE,Net mismatch between bank received amount (25226.92) and gateway reported amount (24999.64).,ESCALATE
-2169,FEE_VARIANCE,Charged fee 363.09 differs from expected base fee 435.71,PROMO_RATE,Charged fee reflects the promotional MDR of 1.50% instead of standard base MDR of 1.80%.,IGNORE
-2171,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1143.74,UPI_WAIVER,Charged fee is 0.0 due to NPCI zero-MDR mandate on UPI transactions.,IGNORE
-2213,FEE_VARIANCE,Charged fee 305.72 differs from expected base fee 366.86,PROMO_RATE,Charged fee reflects the promotional MDR of 1.50% instead of standard base MDR of 1.80%.,IGNORE
-2214,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 491.11,UPI_WAIVER,Charged fee is 0.0 due to NPCI zero-MDR mandate on UPI transactions.,IGNORE
-2257,FEE_VARIANCE,Charged fee 431.8 differs from expected base fee 518.16,PROMO_RATE,Charged fee reflects the promotional MDR of 1.50% instead of standard base MDR of 1.80%.,IGNORE
-2258,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 374.13,UPI_WAIVER,Charged fee is 0.0 due to NPCI zero-MDR mandate on UPI transactions.,IGNORE
-2312,FEE_VARIANCE,Charged fee 322.41 differs from expected base fee 386.9,PROMO_RATE,Charged fee reflects the promotional MDR of 1.50% instead of standard base MDR of 1.80%.,IGNORE
-2361,FEE_VARIANCE,Charged fee 422.68 differs from expected base fee 507.22,PROMO_RATE,Charged fee reflects the promotional MDR of 1.50% instead of standard base MDR of 1.80%.,IGNORE
-2362,NET_MISMATCH,"Bank received 81235.18, Gateway reported 82451.17",GATEWAY_OVERCHARGE,Net mismatch between bank received amount (81235.18) and gateway reported amount (82451.17).,ESCALATE
-2363,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 719.27,UPI_WAIVER,Charged fee is 0.0 due to NPCI zero-MDR mandate on UPI transactions.,IGNORE
+1001,NET_MISMATCH,"Bank received 23815.85, Gateway reported 24262.04",GATEWAY_MISMATCH,"The net settlement mismatch between bank received (23,815.85) and gateway reported (24,262.04) does not correspond to any contractual fee structure or promotional rate.",ESCALATE
+1052,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1689.0,UPI_WAIVER,Zero fee charged is valid per the contract clause waiving commission for UPI transactions under the NPCI zero-MDR mandate.,IGNORE
+1087,NET_MISMATCH,"Bank received 19521.23, Gateway reported 19568.4",MDR_RECOVERY_CHARGE,The flat variance of 47.17 INR falls within the contractually defined MDR recovery charge range (INR 10-100 per recovery cycle).,IGNORE
+1179,NET_MISMATCH,"Bank received 17762.05, Gateway reported 18094.82",GATEWAY_MISMATCH,"The net settlement discrepancy between bank received (17,762.05) and gateway reported (18,094.82) does not align with contractual fee or MDR rates.",ESCALATE
+1180,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 832.17,UPI_WAIVER,Zero fee charged is valid per the contract clause waiving commission for UPI transactions under the NPCI zero-MDR mandate.,IGNORE
+1231,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 149.22,UPI_WAIVER,Zero fee charged is valid per the contract clause waiving commission for UPI transactions under the NPCI zero-MDR mandate.,IGNORE
+1275,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1115.32,UPI_WAIVER,Zero fee charged is valid per the contract clause waiving commission for UPI transactions under the NPCI zero-MDR mandate.,IGNORE
+1329,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1538.09,UPI_WAIVER,Zero fee charged is valid per the contract clause waiving commission for UPI transactions under the NPCI zero-MDR mandate.,IGNORE
+1381,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1687.67,UPI_WAIVER,Zero fee charged is valid per the contract clause waiving commission for UPI transactions under the NPCI zero-MDR mandate.,IGNORE
+1672,FEE_VARIANCE,Charged fee 412.21 differs from expected base fee 494.65,PROMO_RATE,Fee charged (412.21) reflects the Q3 onboarding promotional MDR of 1.50% plus 18% GST instead of the standard 1.80% base rate.,IGNORE
+1673,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1128.46,UPI_WAIVER,Zero fee charged is valid per the contract clause waiving commission for UPI transactions under the NPCI zero-MDR mandate.,IGNORE
+1724,FEE_VARIANCE,Charged fee 336.09 differs from expected base fee 403.31,PROMO_RATE,Fee charged (336.09) reflects the Q3 onboarding promotional MDR of 1.50% plus 18% GST instead of the standard 1.80% base rate.,IGNORE
+1772,MISSING_IN_GATEWAY,Bank net: 25062.05,GHOST_TXN,Transaction appears in the bank statement but is missing from gateway records.,ESCALATE
+1817,FEE_VARIANCE,Charged fee 287.85 differs from expected base fee 345.41,PROMO_RATE,Fee charged (287.85) reflects the Q3 onboarding promotional MDR of 1.50% plus 18% GST instead of the standard 1.80% base rate.,IGNORE
+1855,FEE_VARIANCE,Charged fee 288.68 differs from expected base fee 346.42,PROMO_RATE,Fee charged (288.68) reflects the Q3 onboarding promotional MDR of 1.50% plus 18% GST instead of the standard 1.80% base rate.,IGNORE
+1906,FEE_VARIANCE,Charged fee 306.54 differs from expected base fee 367.85,PROMO_RATE,Fee charged (306.54) reflects the Q3 onboarding promotional MDR of 1.50% plus 18% GST instead of the standard 1.80% base rate.,IGNORE
+1907,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1543.13,UPI_WAIVER,Zero fee charged is valid per the contract clause waiving commission for UPI transactions under the NPCI zero-MDR mandate.,IGNORE
+1908,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 487.97,UPI_WAIVER,Zero fee charged is valid per the contract clause waiving commission for UPI transactions under the NPCI zero-MDR mandate.,IGNORE
+1943,NET_MISMATCH,"Bank received 23694.06, Gateway reported 24068.95",GATEWAY_MISMATCH,"The net settlement mismatch between bank received (23,694.06) and gateway reported (24,068.95) cannot be reconciled with contractual fee schedules.",ESCALATE
+1982,FEE_VARIANCE,Charged fee 310.29 differs from expected base fee 372.35,PROMO_RATE,Fee charged (310.29) reflects the Q3 onboarding promotional MDR of 1.50% plus 18% GST instead of the standard 1.80% base rate.,IGNORE
+2041,FEE_VARIANCE,Charged fee 374.57 differs from expected base fee 449.49,PROMO_RATE,Fee charged (374.57) reflects the Q3 onboarding promotional MDR of 1.50% plus 18% GST instead of the standard 1.80% base rate.,IGNORE
+2042,NET_MISMATCH,"Bank received 64502.79, Gateway reported 66061.85",NET_SETTLEMENT,"Difference between gateway reported gross (66,061.85) and bank net received (64,502.79) matches exact deduction of 2.0% platform commission plus 18% GST (2.36% total).",IGNORE
+2097,FEE_VARIANCE,Charged fee 406.72 differs from expected base fee 488.07,PROMO_RATE,Fee charged (406.72) reflects the Q3 onboarding promotional MDR of 1.50% plus 18% GST instead of the standard 1.80% base rate.,IGNORE
+2136,NET_MISMATCH,"Bank received 25226.92, Gateway reported 24999.64",GATEWAY_MISMATCH,"Bank received amount (25,226.92) exceeds gateway reported amount (24,999.64), indicating an unresolved settlement discrepancy.",ESCALATE
+2169,FEE_VARIANCE,Charged fee 363.09 differs from expected base fee 435.71,PROMO_RATE,Fee charged (363.09) reflects the Q3 onboarding promotional MDR of 1.50% plus 18% GST instead of the standard 1.80% base rate.,IGNORE
+2171,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1143.74,UPI_WAIVER,Zero fee charged is valid per the contract clause waiving commission for UPI transactions under the NPCI zero-MDR mandate.,IGNORE
+2213,FEE_VARIANCE,Charged fee 305.72 differs from expected base fee 366.86,PROMO_RATE,Fee charged (305.72) reflects the Q3 onboarding promotional MDR of 1.50% plus 18% GST instead of the standard 1.80% base rate.,IGNORE
+2214,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 491.11,UPI_WAIVER,Zero fee charged is valid per the contract clause waiving commission for UPI transactions under the NPCI zero-MDR mandate.,IGNORE
+2257,FEE_VARIANCE,Charged fee 431.8 differs from expected base fee 518.16,PROMO_RATE,Fee charged (431.80) reflects the Q3 onboarding promotional MDR of 1.50% plus 18% GST instead of the standard 1.80% base rate.,IGNORE
+2258,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 374.13,UPI_WAIVER,Zero fee charged is valid per the contract clause waiving commission for UPI transactions under the NPCI zero-MDR mandate.,IGNORE
+2312,FEE_VARIANCE,Charged fee 322.41 differs from expected base fee 386.9,PROMO_RATE,Fee charged (322.41) reflects the Q3 onboarding promotional MDR of 1.50% plus 18% GST instead of the standard 1.80% base rate.,IGNORE
+2361,FEE_VARIANCE,Charged fee 422.68 differs from expected base fee 507.22,PROMO_RATE,Fee charged (422.68) reflects the Q3 onboarding promotional MDR of 1.50% plus 18% GST instead of the standard 1.80% base rate.,IGNORE
+2362,NET_MISMATCH,"Bank received 81235.18, Gateway reported 82451.17",GATEWAY_MISMATCH,"The net mismatch between bank received (81,235.18) and gateway reported (82,451.17) does not match any valid contract fee or promotion rate.",ESCALATE
+2363,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 719.27,UPI_WAIVER,Zero fee charged is valid per the contract clause waiving commission for UPI transactions under the NPCI zero-MDR mandate.,IGNORE
