@@ -1,0 +1,35 @@
+transaction_id,exception_type,details
+1001,NET_MISMATCH,"Bank received 23815.85, Gateway reported 24262.04"
+1052,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1689.0
+1087,NET_MISMATCH,"Bank received 19521.23, Gateway reported 19568.4"
+1179,NET_MISMATCH,"Bank received 17762.05, Gateway reported 18094.82"
+1180,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 832.17
+1231,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 149.22
+1275,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1115.32
+1329,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1538.09
+1381,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1687.67
+1672,FEE_VARIANCE,Charged fee 412.21 differs from expected base fee 494.65
+1673,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1128.46
+1724,FEE_VARIANCE,Charged fee 336.09 differs from expected base fee 403.31
+1772,MISSING_IN_GATEWAY,Bank net: 25062.05
+1817,FEE_VARIANCE,Charged fee 287.85 differs from expected base fee 345.41
+1855,FEE_VARIANCE,Charged fee 288.68 differs from expected base fee 346.42
+1906,FEE_VARIANCE,Charged fee 306.54 differs from expected base fee 367.85
+1907,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1543.13
+1908,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 487.97
+1943,NET_MISMATCH,"Bank received 23694.06, Gateway reported 24068.95"
+1982,FEE_VARIANCE,Charged fee 310.29 differs from expected base fee 372.35
+2041,FEE_VARIANCE,Charged fee 374.57 differs from expected base fee 449.49
+2042,NET_MISMATCH,"Bank received 64502.79, Gateway reported 66061.85"
+2097,FEE_VARIANCE,Charged fee 406.72 differs from expected base fee 488.07
+2136,NET_MISMATCH,"Bank received 25226.92, Gateway reported 24999.64"
+2169,FEE_VARIANCE,Charged fee 363.09 differs from expected base fee 435.71
+2171,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 1143.74
+2213,FEE_VARIANCE,Charged fee 305.72 differs from expected base fee 366.86
+2214,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 491.11
+2257,FEE_VARIANCE,Charged fee 431.8 differs from expected base fee 518.16
+2258,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 374.13
+2312,FEE_VARIANCE,Charged fee 322.41 differs from expected base fee 386.9
+2361,FEE_VARIANCE,Charged fee 422.68 differs from expected base fee 507.22
+2362,NET_MISMATCH,"Bank received 81235.18, Gateway reported 82451.17"
+2363,FEE_VARIANCE,Charged fee 0.0 differs from expected base fee 719.27

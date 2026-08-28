@@ -1,0 +1,35 @@
+{
+  "merchant_name": "O'Chicken",
+  "merchant_id": "MER-OCHICKEN-001",
+  "contract_version": "2026-Q3",
+  "effective_from": "2026-07-01",
+  "effective_to": "2026-09-30",
+  "notes": "Synthetic contract for buildathon demo. Structure mirrors typical Razorpay-style merchant fee agreements. All rates are illustrative.",
+  "card_terminal_settlement": {
+    "description": "Daily POS/card terminal batch settlement. MDR charged on gross card sales, GST on MDR.",
+    "mdr_rate_percent": 1.8,
+    "gst_on_mdr_percent": 18,
+    "settlement_frequency": "daily",
+    "special_clause": "Promotional MDR of 1.50% applies to card terminal settlements between 2026-07-15 and 2026-07-31 as part of Q3 onboarding offer."
+  },
+  "razorpay_payout_batch": {
+    "description": "Batch payout of online/UPI-via-Razorpay collections, net of platform commission.",
+    "commission_rate_percent": 2,
+    "gst_on_commission_percent": 18,
+    "commission_waived_below_amount": 100,
+    "special_clause": "Transactions settled via UPI collect flagged as 'UPI-' in narration are commission-free per NPCI zero-MDR-on-UPI mandate; only card/wallet-routed online payments attract the 2% commission."
+  },
+  "mdr_recovery_charge": {
+    "description": "Periodic RuPay/debit card MDR recovery per RBI interchange notification, charged flat per recovery cycle.",
+    "basis": "flat_per_cycle",
+    "typical_range_inr": [
+      10,
+      100
+    ]
+  },
+  "neft_vendor_debits": {
+    "description": "Outgoing vendor/supplier payments initiated by merchant via NEFT. Not fee-bearing on merchant's inward settlement; excluded from fee reconciliation, included in balance reconciliation only."
+  },
+  "gst_computation_base": "GST is computed on the fee/commission amount, not on the gross transaction amount.",
+  "rounding_rule": "All fee computations rounded to 2 decimal places using standard round-half-up."
+}
