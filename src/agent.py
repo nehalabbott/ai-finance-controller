@@ -1,76 +1,87 @@
-import pandas as pd
 import json
-from google import genai
-from google.genai import types
+import pandas as pd
 from pathlib import Path
+from groq import Groq
+import os
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# The SDK automatically detects the GEMINI_API_KEY environment variable
-try:
-    client = genai.Client()
-except Exception as e:
-    raise ValueError(f"Failed to initialize Gemini Client. Make sure GEMINI_API_KEY is set. Error: {e}")
+def run_tier2_agent():
+    print("------------------------------------------------------------")
+    print("🤖 BOOTING TIER 2: AGENTIC DIAGNOSTIC LAYER 🤖")
+    print("------------------------------------------------------------")
 
-def load_contract():
-    with open(ROOT / 'contracts' / 'ochicken_contract.json', 'r') as f:
-        return json.load(f)
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GROQ_API_KEY")
+    client = Groq(api_key=api_key) if api_key else None
 
-def run_ai_diagnostics():
-    contract = load_contract()
-    exceptions_df = pd.read_csv(ROOT / 'output' / 'tier1_exceptions.csv')
-    
-    print(f"Booting AI Agent... Processing all {len(exceptions_df)} exceptions in ONE batch request!\n")
-    
-    # 1. Package all transactions into a single JSON array
-    exceptions_list = exceptions_df.to_dict(orient='records')
-    payload_str = json.dumps(exceptions_list, indent=2)
-    
-    system_prompt = f"""You are an AI Finance Controller for O'Chicken.
-Your job is to diagnose a batch of reconciliation exceptions by referencing this contract:
-{json.dumps(contract, indent=2)}
+    exceptions_path = ROOT / "output" / "tier1_exceptions.csv"
+    contract_path = ROOT / "contracts" / "ochicken_contract.json"
+    output_path = ROOT / "output" / "agent_resolutions.csv"
 
-Determine if each exception is a valid contractual variance (like a UPI waiver or Promo rate) or a genuine anomaly requiring human escalation.
-Respond strictly with a JSON array of objects. Each object MUST contain:
-- "transaction_id": The exact ID of the transaction.
-- "root_cause": A short string classifying the issue (e.g., "UPI_WAIVER", "PROMO_RATE", "GATEWAY_OVERCHARGE", "GHOST_TXN", "UNKNOWN").
-- "reasoning": A brief explanation of your logic based on the contract.
-- "recommended_action": "IGNORE" if it's a valid variance, or "ESCALATE" if it's an anomaly."""
+    if not exceptions_path.exists():
+        print("❌ Error: tier1_exceptions.csv not found. Run reconciler.py first.")
+        return
 
-    try:
-        # 2. Fire one single API call (Takes ~3-5 seconds total)
-        response = client.models.generate_content(
-            model="gemini-3.6-flash",
-            contents=payload_str,
-            config=types.GenerateContentConfig(
-                system_instruction=system_prompt,
-                response_mime_type="application/json"
+    exceptions_df = pd.read_csv(exceptions_path)
+    with open(contract_path, "r") as f:
+        contract_data = json.load(f)
+
+    print(f"Loaded {len(exceptions_df)} exceptions for batch analysis.")
+
+    if client and len(exceptions_df) > 0:
+        payload = exceptions_df.to_dict(orient="records")
+        prompt = f"""
+        You are an elite Enterprise AI Finance Controller. Analyze the following batch of financial reconciliation exceptions against the legal contract rules provided.
+        
+        Contract Rules:
+        {json.dumps(contract_data, indent=2)}
+
+        Exceptions Batch:
+        {json.dumps(payload, indent=2)}
+
+        For each record, determine the precise root cause (e.g., GATEWAY_OVERCHARGE, UPI_WAIVER, PROMO_RATE, GHOST_TXN) and choose an action: 'IGNORE' or 'ESCALATE'.
+        Return your response strictly as a valid JSON array of objects with keys: 'transaction_id', 'root_cause', 'action', and 'reasoning'.
+        Constraint: Do not include any LaTeX syntax, equations, or raw block formatting in your text descriptions; use plain text or standard formatting only.
+        """
+
+        print("Dispatching batched request to active Groq model...")
+        try:
+            response = client.chat.completions.create(
+                model="openai/gpt-oss-120b",
+                messages=[
+                    {"role": "system", "content": "You are a financial auditing assistant that outputs strictly valid JSON."},
+                    {"role": "user", "content": prompt}
+                ],
+                response_format={"type": "json_object"}
             )
-        )
-        
-        # 3. Parse the batch response
-        diagnoses = json.loads(response.text)
-        diag_map = {d["transaction_id"]: d for d in diagnoses}
-        resolutions = []
-        
-        # 4. Map the AI's diagnoses back to the original rows
-        for _, row in exceptions_df.iterrows():
-            tx_id = row["transaction_id"]
-            diag = diag_map.get(tx_id, {
-                "root_cause": "API_ERROR", 
-                "reasoning": "Model missed this row in the batch output.", 
-                "recommended_action": "ESCALATE"
-            })
+            raw_content = response.choices[0].message.content
+            parsed_json = json.loads(raw_content)
+            if isinstance(parsed_json, dict):
+                resolutions = next((v for v in parsed_json.values() if isinstance(v, list)), [])
+            else:
+                resolutions = parsed_json
             
-            print(f"[{tx_id}] -> {diag.get('root_cause')} ({diag.get('recommended_action')})")
-            resolutions.append({**row.to_dict(), **diag})
-            
-        output_df = pd.DataFrame(resolutions)
-        output_df.to_csv(ROOT / 'output' / 'agent_resolutions.csv', index=False)
-        print(f"\nDiagnostic run complete! Report saved to output/agent_resolutions.csv")
+            res_df = pd.DataFrame(resolutions)
+        except Exception as e:
+            print(f"⚠️ API batch processing failed ({e}). Falling back to deterministic heuristics.")
+            res_df = fallback_heuristics(exceptions_df)
+    else:
+        res_df = fallback_heuristics(exceptions_df)
 
-    except Exception as e:
-        print(f"Batch Processing Failed: {e}")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    res_df.to_csv(output_path, index=False)
+    print(f"✅ Tier 2 Agent complete. Resolutions saved to {output_path}")
+
+def fallback_heuristics(df):
+    results = []
+    for _, row in df.iterrows():
+        results.append({
+            "transaction_id": row["transaction_id"],
+            "root_cause": "GATEWAY_OVERCHARGE",
+            "action": "ESCALATE",
+            "reasoning": "Fallback rule applied due to missing or rate-limited LLM connection."
+        })
+    return pd.DataFrame(results)
 
 if __name__ == "__main__":
-    run_ai_diagnostics()
+    run_tier2_agent()
