@@ -34,3 +34,24 @@ Tested on a synthetic 30-day batch of 1,412 bank transactions and 56 gateway set
 **1. Set your API Key**
 ```powershell
 $env:GEMINI_API_KEY="your_api_key_here"
+
+2. Run the Full Automated Pipeline
+Execute the deterministic engine, the AI diagnostic agent, the audit generator, and the evaluation harness in one click:
+
+PowerShell
+python main.py
+3. Launch the Finance Q&A Chatbot
+Query your generated audit sheet using natural language:
+
+PowerShell
+python src/qna_agent.py
+Repository Structure
+/contracts - Machine-readable legal JSON rules.
+
+/data - Synthetic bank ledgers and ground-truth validation keys.
+
+/src - Core engine, AI agents, and data generators.
+
+/tests - The evaluation harness proving submission metrics.
+
+/output - The final reconciliation_audit_sheet.csv generated for finance operators.
