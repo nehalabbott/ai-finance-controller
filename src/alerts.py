@@ -1,18 +1,43 @@
 import json
 import os
 import urllib.request
+import pandas as pd
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-def dispatch_finance_alert(webhook_url: str = None):
-    # Fallback to a mock environment variable or local output report if available
+def compute_live_metrics():
+    """
+    Pulls real numbers from this run's actual output files instead of using
+    hardcoded constants, so the alert always reflects what actually happened -
+    including when the LLM tier fell back to heuristics, or when a future
+    dataset run produces different figures.
+    """
     audit_path = ROOT / "output" / "reconciliation_audit_sheet.csv"
-    
-    total_leaks_caught = 7
-    capital_recovered_inr = 4127.51
-    precision = "87.50%"
-    recall = "100.00%"
+    audit_df = pd.read_csv(audit_path)
+
+    total_leaks_caught = (audit_df["Actual Planted Error"] != "None (Valid Variance)").sum()
+    capital_recovered_inr = audit_df.loc[
+        audit_df["Actual Planted Error"] != "None (Valid Variance)", "Discrepancy (₹)"
+    ].abs().sum()
+    fallback_used = audit_df["Used LLM"].eq(False).any() if "Used LLM" in audit_df.columns else False
+
+    return {
+        "total_leaks_caught": int(total_leaks_caught),
+        "capital_recovered_inr": round(float(capital_recovered_inr), 2),
+        "fallback_used": bool(fallback_used),
+        "total_flagged": len(audit_df),
+    }
+
+def dispatch_finance_alert(webhook_url: str = None):
+    metrics = compute_live_metrics()
+    total_leaks_caught = metrics["total_leaks_caught"]
+    capital_recovered_inr = metrics["capital_recovered_inr"]
+    engine_note = (
+        "⚠️ Deterministic fallback used for one or more exceptions - not a live LLM diagnosis."
+        if metrics["fallback_used"]
+        else "Tier 2 diagnoses were produced by a live LLM call."
+    )
     
     # Constructing a rich Markdown card payload (compatible with Slack, Discord, or MS Teams)
     slack_payload = {
@@ -38,11 +63,7 @@ def dispatch_finance_alert(webhook_url: str = None):
                     },
                     {
                         "type": "mrkdwn",
-                        "text": f"*Recall Rate:*\n{recall}"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": f"*Precision:*\n{precision}"
+                        "text": f"*Total Records Reviewed:*\n{metrics['total_flagged']}"
                     }
                 ]
             },
@@ -50,7 +71,7 @@ def dispatch_finance_alert(webhook_url: str = None):
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "📁 *Output Status:* Actionable audit sheet successfully saved to `/output/reconciliation_audit_sheet.csv`."
+                    "text": f"📁 *Output Status:* Actionable audit sheet successfully saved to `/output/reconciliation_audit_sheet.csv`.\n{engine_note}\nRun `tests/eval_harness.py` for precision/recall against ground truth."
                 }
             }
         ]

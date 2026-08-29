@@ -28,16 +28,29 @@ st.title("🐔 O'Chicken AI Finance Controller")
 st.markdown("**Razorpay AI Buildathon 2026 | Track 04 Dashboard**")
 st.markdown("---")
 
-# Top Metrics Row
+# Top Metrics Row - computed live from this run's actual audit sheet,
+# not hardcoded. If you re-run the pipeline with different/live data these
+# numbers will change accordingly.
+real_leak_mask = audit_df["Actual Planted Error"] != "None (Valid Variance)"
+total_at_risk = audit_df.loc[real_leak_mask, "Discrepancy (₹)"].abs().sum()
+escalated_mask = audit_df["Agent Recommended Action"] == "ESCALATE"
+recovered = audit_df.loc[real_leak_mask & escalated_mask, "Discrepancy (₹)"].abs().sum()
+recovery_pct = (recovered / total_at_risk * 100) if total_at_risk > 0 else 0.0
+missed_leaks = real_leak_mask.sum() - (real_leak_mask & escalated_mask).sum()
+
 col1, col2, col3, col4 = st.columns(4)
 with col1:
-    st.metric("Total Capital at Risk", "₹4,127.51")
+    st.metric("Total Capital at Risk", f"₹{total_at_risk:,.2f}")
 with col2:
-    st.metric("Capital Recovered", "₹4,127.51", delta="100% Recovery")
+    st.metric("Capital Recovered", f"₹{recovered:,.2f}", delta=f"{recovery_pct:.1f}% Recovery")
 with col3:
-    st.metric("Audit Recall Rate", "100.00%", delta="0 False Negatives")
+    st.metric("Real Leaks Missed", int(missed_leaks), delta=None if missed_leaks == 0 else "Needs attention", delta_color="inverse")
 with col4:
     st.metric("Exceptions Flagged", len(audit_df))
+
+if "Used LLM" in audit_df.columns and not audit_df["Used LLM"].all():
+    fallback_n = (~audit_df["Used LLM"]).sum()
+    st.warning(f"⚠️ {fallback_n} of {len(audit_df)} exceptions used the deterministic fallback, not a live LLM diagnosis. Set GROQ_API_KEY and re-run for full AI diagnostics.")
 
 st.markdown("### 📊 Live Reconciliation Audit Sheet")
 st.markdown("Inspect actionable exceptions classified by Tier 1 deterministic math and Tier 2 diagnostics.")
@@ -56,7 +69,9 @@ st.markdown("### 💬 Settlement Q&A AI Assistant")
 st.markdown("Interrogate your financial data and contract clauses in real time.")
 
 # Initialize Groq Client for Chat
-api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GROQ_API_KEY")
+# BUG FIX: previously fell back to GEMINI_API_KEY, which isn't a valid Groq
+# credential and would fail auth silently on first message.
+api_key = os.environ.get("GROQ_API_KEY")
 try:
     client = Groq(api_key=api_key) if api_key else None
 except Exception:

@@ -7,18 +7,29 @@ def generate_audit_spreadsheet():
     # 1. Load data sources
     ledger = pd.read_csv(ROOT / "data" / "ochicken_ledger.csv")
     truth = pd.read_csv(ROOT / "data" / "ochicken_ground_truth.csv")
+    exceptions = pd.read_csv(ROOT / "output" / "tier1_exceptions.csv")
     resolutions = pd.read_csv(ROOT / "output" / "agent_resolutions.csv")
 
-    # 2. Merge ledger details with agent diagnoses
+    # 2. Merge Tier 1 exception metadata with Tier 2 agent diagnoses
+    #    (this is the join that was previously missing, causing exception_type
+    #    to not exist downstream)
+    combined = pd.merge(
+        exceptions,
+        resolutions,
+        on="transaction_id",
+        how="left"
+    )
+
+    # 3. Merge ledger details
     merged = pd.merge(
         ledger[["txn_id", "value_date", "narration", "deposit_amt"]],
-        resolutions,
+        combined,
         left_on="txn_id",
         right_on="transaction_id",
         how="inner"
     )
 
-    # 3. Merge ground truth validation data
+    # 4. Merge ground truth validation data
     merged = pd.merge(
         merged,
         truth[["txn_id", "gross_amount", "correct_net", "discrepancy_amount", "injected_error_type"]],
@@ -26,7 +37,10 @@ def generate_audit_spreadsheet():
         how="left"
     )
 
-    # 4. Select and format audit sheet columns
+    # 5. Select and format audit sheet columns
+    #    NOTE: agent.py's output column is called "action", not "recommended_action".
+    #    We rename it here once, at the boundary, so every downstream consumer
+    #    (this sheet, the dashboard, the eval harness) uses one consistent name.
     audit_df = pd.DataFrame({
         "Transaction ID": merged["txn_id"],
         "Date": merged["value_date"],
@@ -37,8 +51,9 @@ def generate_audit_spreadsheet():
         "Discrepancy (₹)": merged["discrepancy_amount"],
         "Detection Rule": merged["exception_type"],
         "Agent Diagnosis": merged["root_cause"],
-        "Agent Recommended Action": merged["recommended_action"],
+        "Agent Recommended Action": merged["action"],
         "Agent Reasoning / Cause": merged["reasoning"],
+        "Used LLM": ~merged["reasoning"].str.contains("Fallback rule applied", na=False),
         "Actual Planted Error": merged["injected_error_type"].fillna("None (Valid Variance)")
     })
 

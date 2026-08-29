@@ -24,7 +24,7 @@ An enterprise-grade, multi-tiered financial reconciliation and automated capital
 Piping raw transactional CSVs into an LLM is computationally expensive and prone to hallucinations. This project utilizes a highly optimized Multi-Tier Architecture:
 
 * **Tier 1: Deterministic Engine (`src/reconciler.py`)**
-  A fast, rule-based Python engine cross-references the Bank Ledger (net cash) against the Razorpay Settlement Report (gross/fee/tax). It computes mathematical parity based on the legal contract and filters out clean matches, isolating only genuine edge cases.
+  A fast, rule-based Python engine cross-references the Bank Ledger (net cash) against the Razorpay Settlement Report (gross/fee/tax). It computes mathematical parity based on the legal contract - including the promotional MDR window and the UPI/below-threshold commission exemption - and filters out clean matches, isolating only genuine edge cases.
 * **Tier 2: Agentic Diagnostic Layer (`src/agent.py`)**
   The remaining exceptions are packaged into a single JSON array and analyzed via batched LLM payloads. The agent references the merchant contract to classify edge cases (e.g., UPI fee waivers vs. gateway overcharges) and outputs an actionable `IGNORE` or `ESCALATE` recommendation without raw LaTeX formatting bugs.
 * **Tier 3: Active Webhook Gateway (`src/webhook_receiver.py`)**
@@ -36,14 +36,15 @@ Piping raw transactional CSVs into an LLM is computationally expensive and prone
 
 ## 📊 Evaluation Metrics
 
-Tested on a synthetic 30-day batch of 1,412 bank transactions and 56 gateway settlements containing intentionally injected anomalies.
+Tested on a synthetic 30-day batch of 1,412 bank transactions and 56 gateway settlements containing intentionally injected anomalies. These numbers are reproducible by running `python main.py` followed by `python tests/eval_harness.py` against the checked-in synthetic dataset (seed=42) - `eval_harness.py` scores against the **full** ground truth, not just the subset Tier 1 happened to flag, so a real Tier-1 miss would show up as a false negative.
 
 | Metric | Result | Note |
 | --- | --- | --- |
 | **Capital Recovery Rate** | 100.00% | Caught all ₹4,127.51 of injected revenue leaks. |
-| **Recall (Missing Funds)** | 100.00% | Zero false negatives. No leaked capital bypassed the agent. |
-| **Precision** | 87.50% | Heavy bias toward safety (1 false positive escalated for manual review). |
-| **Inference Time** | < 5 seconds | Achieved via single-payload JSON batching, bypassing rate limits. |
+| **Recall (Missing Funds)** | 100.00% | Zero false negatives, verified against the full ground-truth set (not just Tier-1-flagged rows). |
+| **Precision** | 87.50% | 1 false positive escalated for manual review out of 8 total exceptions. |
+
+**Note on the LLM tier:** without a `GROQ_API_KEY` set, Tier 2 uses a deterministic fallback (always escalates, tags the root cause from the Tier-1 exception type) rather than a live LLM diagnosis. The precision/recall numbers above were produced *with the fallback active* - they reflect Tier 1's contract-aware filtering, which is already strong enough to hit these numbers on its own. `eval_harness.py` prints an explicit warning when fallback was used so this is never silently misrepresented as an LLM result. Set `GROQ_API_KEY` to exercise the live LLM diagnostic path.
 
 ---
 
