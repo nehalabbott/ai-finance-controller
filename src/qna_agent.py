@@ -1,31 +1,23 @@
+import os
 import pandas as pd
 import json
-from google import genai
-from google.genai import types
 from pathlib import Path
+from groq import Groq
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# BUG FIX: previously this ran at import time and used `raise` on failure,
-# which crashed the whole module the instant it was imported without a key -
-# inconsistent with the graceful (client = None) fallback pattern used
-# everywhere else in this project (agent.py, app.py, webhook_receiver.py).
+# BUG FIX: Replaced Gemini client initialization with Groq. 
+# Graceful fallback pattern maintained.
 try:
-    client = genai.Client()
+    client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 except Exception as e:
-    print(f"⚠️ Could not initialize Gemini client ({e}). Set GEMINI_API_KEY and retry.")
+    print(f"⚠️ Could not initialize Groq client ({e}). Set GROQ_API_KEY and retry.")
     client = None
 
 
 def load_knowledge_base():
     """
-    NOTE: this file previously had TWO copies of this function (and of
-    run_finance_chat below it) - a leftover from an incomplete refactor.
-    Because Python executes top-to-bottom, the `if __name__ == "__main__"`
-    guard ran before the second, token-efficient version was even defined,
-    so that version was silently dead code and never actually used. This is
-    the single, consolidated version - the token-efficient one, since it's
-    materially cheaper to run against a real API.
+    Loads and optimizes the audit sheet and contract for token-efficient LLM context.
     """
     audit_path = ROOT / "output" / "reconciliation_audit_sheet.csv"
     if not audit_path.exists():
@@ -49,7 +41,7 @@ def load_knowledge_base():
 
 def run_finance_chat():
     if client is None:
-        print("❌ Cannot start Q&A agent: Gemini client not initialized. Set GEMINI_API_KEY.")
+        print("❌ Cannot start Q&A agent: Groq client not initialized. Set GROQ_API_KEY.")
         return
 
     try:
@@ -75,10 +67,8 @@ Rules:
 
     print("Booting Settlement Q&A Agent... \n")
 
-    chat = client.chats.create(
-        model="gemini-3.6-flash",  # re-check https://ai.google.dev/gemini-api/docs/models before a demo
-        config=types.GenerateContentConfig(system_instruction=system_instruction)
-    )
+    # Manually maintain message history for the stateless Groq API
+    messages = [{"role": "system", "content": system_instruction}]
 
     print("Agent ready! Ask about your financial data (type 'exit' to quit).")
     print("Example: 'Why was transaction 1179 escalated?' or 'How much money are we losing to gateway overcharges?'\n")
@@ -88,14 +78,29 @@ Rules:
         if user_query.lower() in ["exit", "quit"]:
             print("Shutting down Q&A agent.")
             break
+            
+        messages.append({"role": "user", "content": user_query})
 
         try:
-            response = chat.send_message_stream(user_query)
+            # Replaced gemini-3.6-flash with the judge-approved openai/gpt-oss-120b
+            response_stream = client.chat.completions.create(
+                model="openai/gpt-oss-120b",
+                messages=messages,
+                stream=True
+            )
+            
             print(f"\nAI Controller: ", end="", flush=True)
-            for chunk in response:
-                if chunk.text:
-                    print(chunk.text, end="", flush=True)
+            full_response = ""
+            for chunk in response_stream:
+                if chunk.choices[0].delta.content:
+                    text = chunk.choices[0].delta.content
+                    print(text, end="", flush=True)
+                    full_response += text
             print("\n\n" + "-" * 50)
+            
+            # Append the completed AI response to the history array to maintain context
+            messages.append({"role": "assistant", "content": full_response})
+            
         except Exception as e:
             print(f"\nError processing query: {e}\n")
 

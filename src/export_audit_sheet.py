@@ -11,8 +11,6 @@ def generate_audit_spreadsheet():
     resolutions = pd.read_csv(ROOT / "output" / "agent_resolutions.csv")
 
     # 2. Merge Tier 1 exception metadata with Tier 2 agent diagnoses
-    #    (this is the join that was previously missing, causing exception_type
-    #    to not exist downstream)
     combined = pd.merge(
         exceptions,
         resolutions,
@@ -37,10 +35,7 @@ def generate_audit_spreadsheet():
         how="left"
     )
 
-    # 5. Select and format audit sheet columns
-    #    NOTE: agent.py's output column is called "action", not "recommended_action".
-    #    We rename it here once, at the boundary, so every downstream consumer
-    #    (this sheet, the dashboard, the eval harness) uses one consistent name.
+    # 5. Select and format audit sheet columns based on the strict agent schema
     audit_df = pd.DataFrame({
         "Transaction ID": merged["txn_id"],
         "Date": merged["value_date"],
@@ -51,16 +46,18 @@ def generate_audit_spreadsheet():
         "Discrepancy (₹)": merged["discrepancy_amount"],
         "Detection Rule": merged["exception_type"],
         "Agent Diagnosis": merged["root_cause"],
-        "Agent Recommended Action": merged["action"],
-        "Agent Reasoning / Cause": merged["reasoning"],
-        "Used LLM": ~merged["reasoning"].str.contains("Fallback rule applied", na=False),
+        "Agent Recommended Action": merged["recommended_action"],
+        "Agent Confidence": merged["confidence"],
+        "Human Approval Needed": merged["human_approval_required"],
+        # Check confidence score rather than legacy 'reasoning' strings to detect fallbacks
+        "Used LLM": merged["confidence"] > 0.0, 
         "Actual Planted Error": merged["injected_error_type"].fillna("None (Valid Variance)")
     })
 
-    # 5. Sort by discrepancies requiring escalation first
+    # 6. Sort by items requiring human approval and highest monetary discrepancy
     audit_df.sort_values(
-        by=["Agent Recommended Action", "Discrepancy (₹)"],
-        ascending=[True, False],
+        by=["Human Approval Needed", "Discrepancy (₹)"],
+        ascending=[False, False],
         inplace=True
     )
 
@@ -69,8 +66,13 @@ def generate_audit_spreadsheet():
 
     print(f"Spreadsheet generated: {output_path}")
     print(f"Total flagged transactions: {len(audit_df)}")
-    print(f"Items flagged for recovery (ESCALATE): {(audit_df['Agent Recommended Action'] == 'ESCALATE').sum()}")
-    print(f"Legitimate variances cleared (IGNORE): {(audit_df['Agent Recommended Action'] == 'IGNORE').sum()}")
+    
+    # Safely sum escalation actions using the new schema naming
+    escalations = audit_df['Agent Recommended Action'].astype(str).str.contains('ESCALATE', case=False).sum()
+    ignores = audit_df['Agent Recommended Action'].astype(str).str.contains('IGNORE', case=False).sum()
+    
+    print(f"Items flagged for recovery (ESCALATE): {escalations}")
+    print(f"Legitimate variances cleared (IGNORE): {ignores}")
 
 if __name__ == "__main__":
     generate_audit_spreadsheet()
