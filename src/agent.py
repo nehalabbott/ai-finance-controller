@@ -14,7 +14,6 @@ class ExceptionDiagnosis(BaseModel):
     confidence: float
     recommended_action: str
     human_approval_required: bool
-
 def run_tier2_agent():
     print("------------------------------------------------------------")
     print("🤖 BOOTING TIER 2: AGENTIC DIAGNOSTIC LAYER 🤖")
@@ -43,7 +42,6 @@ def run_tier2_agent():
     if client and len(exceptions_df) > 0:
         payload = exceptions_df.to_dict(orient="records")
         
-        # Enforce structured operational schema output as requested by the judge
         prompt = f"""
         You are an elite Enterprise AI Finance Controller. Analyze the following batch of financial reconciliation exceptions against the legal contract rules provided.
         
@@ -88,6 +86,16 @@ def run_tier2_agent():
                     resolutions = parsed_json
 
                 res_df = pd.DataFrame(resolutions)
+                
+                if not res_df.empty and "transaction_id" in res_df.columns:
+                    merged_check = pd.merge(res_df, exceptions_df, left_on="transaction_id", right_on="transaction_id", how="left")
+                    for _, row in merged_check.iterrows():
+                        exc_type = str(row.get("exception_type", ""))
+                        if exc_type in ["FEE_VARIANCE", "NET_MISMATCH", "MISSING_IN_GATEWAY", "MISSING_IN_BANK"]:
+                            res_df.loc[res_df["transaction_id"] == row["transaction_id"], "recommended_action"] = "ESCALATE"
+                            res_df.loc[res_df["transaction_id"] == row["transaction_id"], "human_approval_required"] = True
+                # ----------------------------------------
+                
                 break
             except Exception as e:
                 last_error = e
@@ -110,7 +118,6 @@ def run_tier2_agent():
         print(f"⚠️  {fallback_count}/{len(res_df)} record(s) used the fallback heuristic,")
         print(f"    not a live LLM diagnosis. See 'confidence' column in the audit sheet.")
     print(f"✅ Tier 2 Agent complete. Resolutions saved to {output_path}")
-
 
 def fallback_heuristics(df):
     """

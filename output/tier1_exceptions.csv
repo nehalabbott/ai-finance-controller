@@ -1,9 +1,13 @@
 transaction_id,exception_type,details
-1001,NET_MISMATCH,"Bank received 23815.85, Gateway reported 24262.04"
-1087,NET_MISMATCH,"Bank received 19521.23, Gateway reported 19568.4"
-1179,NET_MISMATCH,"Bank received 17762.05, Gateway reported 18094.82"
-1772,MISSING_IN_GATEWAY,Bank net: 25062.05
-1943,NET_MISMATCH,"Bank received 23694.06, Gateway reported 24068.95"
-2042,NET_MISMATCH,"Bank received 64502.79, Gateway reported 66061.85"
-2136,NET_MISMATCH,"Bank received 25226.92, Gateway reported 24999.64"
-2362,NET_MISMATCH,"Bank received 81235.18, Gateway reported 82451.17"
+1032,DUPLICATE_IN_LEDGER,Transaction ID appears multiple times in bank ledger
+1006,NET_MISMATCH,"Bank received 23815.85, Gateway reported 24262.04"
+1010,MISSING_IN_GATEWAY,Bank net: 19752.02
+1012,NET_MISMATCH,"Bank received 13401.87, Gateway reported 13609.69"
+1025,NET_MISMATCH,"Bank received 8432.57, Gateway reported 8636.39"
+1026,NET_MISMATCH,"Bank received 20443.2, Gateway reported 20081.35"
+1027,MISSING_IN_GATEWAY,Bank net: 46726.34
+1033,NET_MISMATCH,"Bank received 17878.71, Gateway reported 18155.96"
+1039,NET_MISMATCH,"Bank received 20657.49, Gateway reported 20471.37"
+1041,NET_MISMATCH,"Bank received 25539.51, Gateway reported 25693.85"
+1044,NET_MISMATCH,"Bank received 71053.58, Gateway reported 72770.98"
+1047,NET_MISMATCH,"Bank received 14117.84, Gateway reported 17230.83"
