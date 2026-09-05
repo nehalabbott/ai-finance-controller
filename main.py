@@ -28,7 +28,8 @@ def run_pipeline():
     
     print("\n" + "="*60)
     print("✅ PIPELINE COMPLETE! All reports saved to the /output folder.")
-    print("💡 To interact with the audit sheet, run: python src/qna_agent.py")
+    print("💡 To interact with the CLI audit Q&A, run: python src/qna_agent.py")
+    print("📊 To view the Finance Operator Dashboard, run: streamlit run src/app.py")
     print("🌐 To start the real-time API daemon, run: python -m uvicorn src.webhook_receiver:app --reload")
     print("="*60)
 

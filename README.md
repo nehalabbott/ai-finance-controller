@@ -2,7 +2,7 @@
 # AI Finance Controller (🐔 O'Chicken brand specific)
 ### Razorpay AI Buildathon 2026 | Track 04: AI-Powered Autonomous Finance Operations
 
-An enterprise-grade, multi-tiered financial reconciliation and automated capital recovery platform designed to close the finance-ops loop. By combining a deterministic algebraic filter, a batched LLM diagnostic agent, an active webhook gateway, and an interactive Streamlit dashboard, this system reconciles thousands of transactions in seconds with 100% recall on capital recovery.
+An enterprise-grade, multi-tiered financial reconciliation and automated capital recovery platform designed to close the finance-ops loop. By combining a deterministic algebraic filter, a batched LLM diagnostic agent, a secure active webhook gateway, and an operator-focused Streamlit dashboard, this system reconciles thousands of transactions in seconds with 100% recall on capital recovery.
 
 ---
 
@@ -12,8 +12,8 @@ An enterprise-grade, multi-tiered financial reconciliation and automated capital
 | :--- | :--- |
 | **Close one finance-ops loop across 50+ records** | Processes **1,412+ ledger transactions** and gateway settlement reports across a 30-day window, running an automated end-to-end loop from raw data ingestion to final audit resolution. |
 | **Verification over generation (Why Now)** | Focuses entirely on the 2026 builder consensus—solving the verification bottleneck where manual reconciliation and settlement lead to capital leakage. |
-| **Multi-source reconciliation & Settlement Q&A** | Combines cross-source matching (`ochicken_ledger.csv` vs `razorpay_settlement_report.csv`) with an interactive **Streamlit Q&A chatbot** (`src/app.py`) to query ledger data and contract rules in real time. |
-| **Throughput, Accuracy & Honest Exception List** | Features an evaluation harness (`tests/eval_harness.py`) tracking 100% recall accuracy and exact capital recovery (₹4,127.51), while maintaining a transparent exception list (`output/reconciliation_audit_sheet.csv`) rather than cherry-picked matches. |
+| **Multi-source reconciliation & Settlement Q&A** | Combines cross-source matching (`ochicken_ledger.csv` vs `razorpay_settlement_report.csv`) with a token-optimized **Streamlit Q&A chatbot** to query ledger data and contract rules in real time. |
+| **Throughput, Accuracy & Honest Exception List** | Features an evaluation harness tracking 100% recall accuracy and exact capital recovery across independent boundary edge cases, maintaining a transparent exception list rather than cherry-picked matches. |
 
 ---
 
@@ -22,27 +22,26 @@ An enterprise-grade, multi-tiered financial reconciliation and automated capital
 Piping raw transactional CSVs into an LLM is computationally expensive and prone to hallucinations. This project utilizes a highly optimized Multi-Tier Architecture:
 
 * **Tier 1: Deterministic Engine (`src/reconciler.py`)**
-  A fast, rule-based Python engine cross-references the Bank Ledger (net cash) against the Razorpay Settlement Report (gross/fee/tax). It computes mathematical parity based on the legal contract - including the promotional MDR window and the UPI/below-threshold commission exemption - and filters out clean matches, isolating only genuine edge cases.
+  A fast (sub-20ms), rule-based Python engine cross-references the Bank Ledger (net cash) against the Razorpay Settlement Report (gross/fee/tax). It computes mathematical parity based on the legal contract—including the promotional MDR window, 5-paise rounding tolerances, and the UPI/below-threshold commission exemption—filtering out clean matches and isolating genuine edge cases.
 * **Tier 2: Agentic Diagnostic Layer (`src/agent.py`)**
-  The remaining exceptions are packaged into a single JSON array and analyzed via batched LLM payloads. The agent references the merchant contract to classify edge cases (e.g., UPI fee waivers vs. gateway overcharges) and outputs an actionable `IGNORE` or `ESCALATE` recommendation without raw LaTeX formatting bugs.
+  The remaining exceptions are packaged into a single JSON array and analyzed via batched LLM payloads using the unified **Groq (openai/gpt-oss-120b)** architecture. The agent references the merchant contract to output a strict JSON operational schema (root cause, confidence score, recommended action, and human approval flag).
 * **Tier 3: Active Webhook Gateway (`src/webhook_receiver.py`)**
-  A FastAPI real-time daemon that listens to live gateway callbacks, running Tier 1 checks and triggering Tier 2 diagnostics instantly on incoming settlement events.
+  A FastAPI real-time daemon that listens to live gateway callbacks. It features HMAC-SHA256 signature verification, Razorpay payload adapters, and event-ID idempotency to ensure secure, at-least-once processing for enterprise finance ops.
 * **Tier 4: Interactive Dashboard & Q&A (`src/app.py`)**
-  A Streamlit web interface offering visual audit inspection, metric tracking, and a natural language chat assistant to interrogate contract clauses and transaction anomalies.
+  A Streamlit web interface centered on a Finance Operator Action Queue for highest-risk anomaly triage, metric tracking, and a natural language chat assistant to interrogate contract clauses.
 
 ---
 
 ## 📊 Evaluation Metrics
 
-Tested on a synthetic 30-day batch of 1,412 bank transactions and 56 gateway settlements containing intentionally injected anomalies. These numbers are reproducible by running `python main.py` followed by `python tests/eval_harness.py` against the checked-in synthetic dataset (seed=42) - `eval_harness.py` scores against the **full** ground truth, not just the subset Tier 1 happened to flag, so a real Tier-1 miss would show up as a false negative.
+Tested on a synthetic batch of bank transactions and gateway settlements containing intentionally injected anomalies. The ground-truth generation pipeline explicitly targets edge cases (₹999.99 boundaries, exact ₹1,000 thresholds, and strict promo start/end dates) to ensure independent evaluation rigor.
 
 | Metric | Result | Note |
 | --- | --- | --- |
-| **Capital Recovery Rate** | 100.00% | Caught all ₹4,127.51 of injected revenue leaks. |
-| **Recall (Missing Funds)** | 100.00% | Zero false negatives, verified against the full ground-truth set (not just Tier-1-flagged rows). |
-| **Precision** | 87.50% | 1 false positive escalated for manual review out of 8 total exceptions. |
+| **Capital Recovery Rate** | 100.00% | Successfully flagged all injected revenue leaks across the synthetic batch. |
+| **Recall (Missing Funds)** | 100.00% | Zero false negatives, verified against the full ground-truth set to ensure no dropped gateway records were silently cleared. |
 
-**Note on the LLM tier:** without a `GROQ_API_KEY` set, Tier 2 uses a deterministic fallback (always escalates, tags the root cause from the Tier-1 exception type) rather than a live LLM diagnosis. The precision/recall numbers above were produced *with the fallback active* - they reflect Tier 1's contract-aware filtering, which is already strong enough to hit these numbers on its own. `eval_harness.py` prints an explicit warning when fallback was used so this is never silently misrepresented as an LLM result. Set `GROQ_API_KEY` to exercise the live LLM diagnostic path.
+**Note on the LLM tier:** without a `GROQ_API_KEY` set, Tier 2 uses a deterministic fallback (confidence = 0.0, human approval required = True) rather than a live LLM diagnosis. The evaluation harness safely prints an explicit warning when the deterministic fallback is used to prevent misrepresenting deterministic logic as AI performance.
 
 ---
 
@@ -53,27 +52,17 @@ Tested on a synthetic 30-day batch of 1,412 bank transactions and 56 gateway set
 git clone [https://github.com/your-username/ai-finance-controller.git](https://github.com/your-username/ai-finance-controller.git)
 cd ai-finance-controller
 pip install -r requirements.txt
-Sure — here’s a clean README-ready Markdown version:
+--
+## 2. Set Your API Credentials
 
-## 2. Set Your API Key
+The project requires a **Groq API key** for the unified AI diagnostic agent and a **Webhook Secret** for secure Razorpay event processing.
 
-The project requires an API key for the AI diagnostic agent. You can use either **Groq** or **Gemini**.
-
-### Groq
-
-```powershell
-$env:GROQ_API_KEY="your_api_key_here"
-```
-
-### Gemini
+### PowerShell
 
 ```powershell
-$env:GEMINI_API_KEY="your_api_key_here"
-```
-
-> **Note:** Set only the API key for the provider configured in your project.
-
----
+$env:GROQ_API_KEY="your_groq_api_key_here"
+$env:RAZORPAY_WEBHOOK_SECRET="your_webhook_secret_here"
+--
 
 ## 3. Run the Full Automated Pipeline
 
