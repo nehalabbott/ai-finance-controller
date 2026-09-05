@@ -5,7 +5,8 @@ services:
     build: .
     container_name: ochicken_finance_controller
     environment:
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      # Replaced GEMINI_API_KEY with the unified Groq configuration
+      - GROQ_API_KEY=${GROQ_API_KEY}
     volumes:
       - ./output:/app/output
     command: ["python", "main.py"]
@@ -14,7 +15,9 @@ services:
     build: .
     container_name: ochicken_webhook_daemon
     environment:
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      # Added to support Razorpay webhook signature validation
+      - RAZORPAY_WEBHOOK_SECRET=${RAZORPAY_WEBHOOK_SECRET}
     ports:
       - "8000:8000"
     command: ["python", "-m", "uvicorn", "src.webhook_receiver:app", "--host", "0.0.0.0", "--port", "8000"]
