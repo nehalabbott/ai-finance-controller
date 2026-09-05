@@ -1,7 +1,5 @@
-# ai-finance-controller
-For reconcillation
 
-# 🐔 O'Chicken AI Finance Controller
+# AI Finance Controller (🐔 O'Chicken brand specific)
 ### Razorpay AI Buildathon 2026 | Track 04: AI-Powered Autonomous Finance Operations
 
 An enterprise-grade, multi-tiered financial reconciliation and automated capital recovery platform designed to close the finance-ops loop. By combining a deterministic algebraic filter, a batched LLM diagnostic agent, an active webhook gateway, and an interactive Streamlit dashboard, this system reconciles thousands of transactions in seconds with 100% recall on capital recovery.
